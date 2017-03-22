@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-#reset function
-
-
 k(){
 
     #args to concatenate
@@ -138,6 +135,15 @@ k(){
         OPTS+=("bash")
         fi
 
+        #get pod name by service name
+        if [[ "$1" == "" ]]
+        then
+        OPTS+=("exec")
+        OPTS+=("-it")
+        OPTS+=("$2")
+        OPTS+=("bash")
+        fi
+
         #kubectl update
         #k update
         if [[ "$1" == "update" ]]
@@ -147,11 +153,18 @@ k(){
         fi
 
 
+        if [[ "$1" == "sf" ]]
+        then
+        sel=${$(kubectl get service $2 --output=json | jq -j '.spec.selector | to_entries | .[] | "\(.key)=\(.value),"')%?}
+        podid=$(kubectl get pods --selector=$sel --output=jsonpath={.items..metadata.name})
+        echo $podid
+        fi
 
 
-kubectl $OPTS
-echo "kubectl $OPTS"
-sleep 2
-#$ROLLOUT
+
+#kubectl $OPTS
+#echo "kubectl $OPTS"
+#sleep 2
+#eval $ROLLOUT
 }
 
