@@ -96,7 +96,7 @@ k(){
 
         #kubectl expose deployment/NAME --type NodePort --port PORT
         #k e nginx 80
-        if [[ "$1" == "e" ]]
+        if [[ "$1" == "ep" ]]
         then
         OPTS+=("expose")
         OPTS+=("deployment/$2")
@@ -106,6 +106,19 @@ k(){
         OPTS+=($3)
         fi
 
+        #kubectl expose deployment/NAME --type NodePort --port PORT
+        #k e nginx 80
+        if [[ "$1" == "ex" ]]
+        then
+        OPTS+=("exec")
+        OPTS+=("-it")
+        OPTS+=("$2")
+        OPTS+=("bash")
+        fi
+
+
+
     kubectl $OPTS
     echo "kubectl $OPTS"
 }
+
