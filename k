@@ -21,7 +21,7 @@ svc="$1"
 label=`kubectl get service $svc --output=json | jq -j '.spec.selector | to_entries | .[] | "\(.key)=\(.value)"'`
 podid=`kubectl get pods --selector=$label --output=jsonpath={.items..metadata.name}`
 
-echo "$podid"
+#echo "$podid"
 }
 
 #kubectl cluster-info
@@ -161,12 +161,15 @@ fi
 if [[ "$1" == "s2p" ]]
 then
 pid=`s2p $2`
-#die $pid
-echo "$pid"
+
+OPTS+=("port-forward")
+OPTS+=("$pid")
+OPTS+=(":$3")
+
 fi
 
 #kubectl $OPTS
-#echo "kubectl $OPTS"
+echo "kubectl $OPTS"
 #sleep 2
 #eval $ROLLOUT
 
