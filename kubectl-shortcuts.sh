@@ -9,6 +9,7 @@ k(){
     ARGS=()
 
     OPTS=
+    ROLLOUT=
 
     NS='--all-namespaces'
 
@@ -37,6 +38,20 @@ k(){
             OPTS+=("$NS")
             fi
 
+            #kubectl get deployments
+            if [[ "$2" == "d" ]]
+            then
+            OPTS+=('deployments')
+            OPTS+=("$NS")
+            fi
+
+            #kubectl get ingress
+            if [[ "$2" == "i" ]]
+            then
+            OPTS+=('ing')
+            OPTS+=("$NS")
+            fi
+
         fi
 
         #kubectl apply -f $2
@@ -53,24 +68,31 @@ k(){
         OPTS+=('delete')
 
             #kubectl delete -f
-            if [[ "$1" == "f" ]]
+            if [[ "$2" == "f" ]]
             then
             OPTS+=('-f')
-            OPTS+=("$2")
+            OPTS+=("$3")
             fi
 
             #kubectl delete pod
-            if [[ "$1" == "p" ]]
+            if [[ "$2" == "p" ]]
             then
             OPTS+=('pod')
-            OPTS+=("$2")
+            OPTS+=("$3")
             fi
 
             #kubectl delete service
-            if [[ "$1" == "s" ]]
+            if [[ "$2" == "s" ]]
             then
             OPTS+=('service')
-            OPTS+=("$2")
+            OPTS+=("$3")
+            fi
+
+            #kubectl delete deployment
+            if [[ "$2" == "d" ]]
+            then
+            OPTS+=('deployment')
+            OPTS+=("$3")
             fi
 
         fi
@@ -81,7 +103,6 @@ k(){
         OPTS+=("port-forward")
         OPTS+=("$2")
         OPTS+=(":$3")
-        OPTS+=("&")
         fi
 
         #kubectl run NAME --image IMAGE
@@ -92,6 +113,7 @@ k(){
         OPTS+=("$2")
         OPTS+=("--image")
         OPTS+=("$3")
+        ROLLOUT="kubectl rollout status deployment/$2"
         fi
 
         #kubectl expose deployment/NAME --type NodePort --port PORT
@@ -116,9 +138,20 @@ k(){
         OPTS+=("bash")
         fi
 
+        #kubectl update
+        #k update
+        if [[ "$1" == "update" ]]
+        then
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+        chmod +x ./kubectl; sudo mv ./kubectl /usr/local/bin/kubectl
+        fi
 
 
-    kubectl $OPTS
-    echo "kubectl $OPTS"
+
+
+kubectl $OPTS
+echo "kubectl $OPTS"
+sleep 2
+#$ROLLOUT
 }
 
